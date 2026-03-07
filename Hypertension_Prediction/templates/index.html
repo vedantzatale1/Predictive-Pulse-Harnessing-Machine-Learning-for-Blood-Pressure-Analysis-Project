@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hypertension Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="page-bg">
+        <div class="app-shell">
+            <header class="topbar">
+                <div>
+                    <h1>Hypertension Detection</h1>
+                    <p>Advanced AI-Powered Cardiovascular Risk Assessment Platform</p>
+                </div>
+                <div class="badges">
+                    <span>Medical Grade</span>
+                    <span>AI-Powered</span>
+                </div>
+            </header>
+
+            <main class="main-grid">
+                <section class="left-panel">
+                    <div class="panel-head">
+                        <h2>Comprehensive Health Assessment</h2>
+                        <p>Complete our evidence-based questionnaire for personalized hypertension risk evaluation and clinical recommendations.</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="flash {{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    {% if prediction_text %}
+                    <article class="result-card" style="--result-color: {{ result_color }};">
+                        <h3>{{ recommendation.title }}</h3>
+                        <p class="confidence">Confidence: {{ confidence }}% <span>{{ recommendation.priority }}</span></p>
+                        <p>{{ recommendation.description }}</p>
+                        <h4>Clinical Recommendations</h4>
+                        <ul>
+                            {% for item in recommendation.actions %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </article>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('predict') }}" class="form-grid">
+                        {% for field, values in options.items() %}
+                        <label>
+                            <span>{{ field }}</span>
+                            <select name="{{ field }}" required>
+                                <option value="" disabled {% if not form_data.get(field) %}selected{% endif %}>Select Option</option>
+                                {% for value in values %}
+                                <option value="{{ value }}" {% if form_data.get(field) == value %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                        {% endfor %}
+                        <button type="submit">Generate Risk Assessment</button>
+                    </form>
+                </section>
+
+                <aside class="right-panel">
+                    <div class="info-card">
+                        <h3>About This System</h3>
+                        <p>Our AI-powered platform analyzes multiple cardiovascular risk factors using advanced machine learning algorithms.</p>
+                        <ul>
+                            <li>Evidence-based risk assessment</li>
+                            <li>Clinical guideline compliance</li>
+                            <li>Personalized recommendations</li>
+                            <li>Professional medical support</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Blood Pressure Guidelines</h3>
+                        <ul class="guidelines">
+                            <li><strong>Normal:</strong> &lt;120/80 mmHg</li>
+                            <li><strong>Elevated:</strong> 120-129/&lt;80 mmHg</li>
+                            <li><strong>Stage 1:</strong> 130-139/80-89 mmHg</li>
+                            <li><strong>Stage 2:</strong> =140/=90 mmHg</li>
+                            <li><strong>Crisis:</strong> &gt;180/&gt;120 mmHg</li>
+                        </ul>
+                    </div>
+                </aside>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
